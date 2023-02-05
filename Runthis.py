@@ -82,6 +82,5 @@ stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation,
 imsave('TTa.png', torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)), cmap='gray')
 
 imsave('TTb.png', fftshift(result['p'][:-2].reshape(n1, n2)), cmap='gray')
-title('Learned pattern')
 
 imsave('TTc.png', torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)), cmap='gray')
