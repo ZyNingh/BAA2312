@@ -1,22 +1,23 @@
 from matplotlib import pyplot as PLT
+from bilevelmri.experiment_setup import learn, compute_statistics
 from bilevelmri.linear_ops.gradients import Grad
 from bilevelmri.functionals import Smoothed1Norm
 from bilevelmri.loss_functions import least_squares
 from bilevelmri.penalty_functions import l1_disc_penalty
 from bilevelmri.parametrisations import alpha_parametrisation, free_parametrisation
 import torch
-
+import numpy as np
 torch.set_default_dtype(torch.float64)
 import SimpleITK as sitk
 import skimage.io as io
 
 
-path = 'C:\\Users\\Zhiya\\Desktop\\LMU_WS2122\\Bachlor Thesis\\Liturature\\bilevelmri\\image\\sub-093-anat-sub-093_run-01_T1w.nii.gz'
+path = "//home//leidenschaftchen//MRI//BAA2312//image//sub-093-anat-sub-093_run-01_T1w.nii.gz"
 PREimg = sitk.ReadImage(path)
 PREdata = sitk.GetArrayFromImage(PREimg)
 
 rawImage = PREdata[50]
-MavVl = double(np.amax(rawImage))
+MavVl = float(np.amax(rawImage))
 rawImage = rawImage / MavVl
 
 image = torch.tensor(rawImage)
