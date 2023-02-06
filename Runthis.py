@@ -11,6 +11,7 @@ torch.set_default_dtype(torch.float64)
 import SimpleITK as sitk
 import skimage.io as io
 import imageio
+from scipy import fftpack
 
 path = "//home//leidenschaftchen//MRI//BAA2312//image//sub-093-anat-sub-093_run-01_T1w.nii.gz"
 PREimg = sitk.ReadImage(path)
