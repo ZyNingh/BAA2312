@@ -16,7 +16,7 @@ path = "//home//leidenschaftchen//MRI//BAA2312//image//sub-093-anat-sub-093_run-
 PREimg = sitk.ReadImage(path)
 PREdata = sitk.GetArrayFromImage(PREimg)
 
-rawImage = PREdata[50]
+rawImage = PREdata[60]
 MavVl = float(np.amax(rawImage))
 rawImage = rawImage / MavVl
 
@@ -78,11 +78,11 @@ result = learn(data, p_init, p_bounds, free_parametrisation, A, reg_func,
 
 stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation, params)
 
-imageio.imwrite("SDFJ1.png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
+imageio.imwrite("SDFJ60.png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
 
-imageio.imwrite("SDFJ12.png",fftshift(result['p'][:-2].reshape(n1, n2)))
+imageio.imwrite("SDFJ70.png",fftshift(result['p'][:-2].reshape(n1, n2)))
 
 
-imageio.imwrite("SDFJ123.png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))
+imageio.imwrite("SDFJ80.png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))
 
 
