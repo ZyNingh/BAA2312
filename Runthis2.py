@@ -11,6 +11,7 @@ torch.set_default_dtype(torch.float64)
 import SimpleITK as sitk
 import skimage.io as io
 import imageio
+from scipy import fftpack
 
 path = "//home//leidenschaftchen//MRI//BAA2312//image//sub-093-anat-sub-093_run-01_T1w.nii.gz"
 PREimg = sitk.ReadImage(path)
@@ -80,7 +81,7 @@ stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation,
 
 imageio.imwrite("SDFJ60.png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
 
-imageio.imwrite("SDFJ70.png",fftshift(result['p'][:-2].reshape(n1, n2)))
+imageio.imwrite("SDFJ70.png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
 
 
 imageio.imwrite("SDFJ80.png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))

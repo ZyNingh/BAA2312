@@ -81,7 +81,7 @@ stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation,
 
 imageio.imwrite("SDFJ1.png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
 
-imageio.imwrite("SDFJ12.png",fftshift(result['p'][:-2].reshape(n1, n2)))
+imageio.imwrite("SDFJ12.png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
 
 
 imageio.imwrite("SDFJ123.png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))
