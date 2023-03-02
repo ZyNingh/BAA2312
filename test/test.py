@@ -4,6 +4,8 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 from matplotlib import pyplot as PLT
 from bilevelmri.experiment_setup import learn, compute_statistics
 from bilevelmri.linear_ops.gradients import Grad
+from bilevelmri.linear_ops.wavelets import Wavelet
+
 from bilevelmri.functionals import Smoothed1Norm
 from bilevelmri.loss_functions import least_squares
 from bilevelmri.penalty_functions import l1_disc_penalty
@@ -66,7 +68,7 @@ params = {
     }
 }
 
-A = Grad()
+A = Wavelet()
 reg_func = Smoothed1Norm(gamma=1e-2)
 
 

@@ -93,7 +93,7 @@ def compute_statistics(data, p, A, reg_func, parametrisation, params):
         abs_recon = torch.sqrt(torch.sum(recons[i, :, :, :]**2, dim=2)).numpy()
         abs_clean = torch.sqrt(torch.sum(data['x'][i, :, :, :]**2,
                                          dim=2)).cpu().numpy()
-        ssims.append(ssim(abs_clean, abs_recon,data_range=1.5))
-        psnrs.append(psnr(abs_clean, abs_recon,data_range=1.5))
+        ssims.append(ssim(abs_clean, abs_recon))
+        psnrs.append(psnr(abs_clean, abs_recon))
     results = {'recons': recons, 'ssims': ssims, 'psnrs': psnrs}
     return results
