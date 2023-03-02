@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 from matplotlib import pyplot as PLT
 from bilevelmri.experiment_setup import learn, compute_statistics
 from bilevelmri.linear_ops.gradients import Grad
@@ -12,22 +15,30 @@ import SimpleITK as sitk
 import skimage.io as io
 import imageio
 from scipy import fftpack
+from multiprocessing import cpu_count
+cpu_num = cpu_count() 
+os.environ ['OMP_NUM_THREADS'] = str(cpu_num)
+os.environ ['OPENBLAS_NUM_THREADS'] = str(cpu_num)
+os.environ ['MKL_NUM_THREADS'] = str(cpu_num)
+os.environ ['VECLIB_MAXIMUM_THREADS'] = str(cpu_num)
+os.environ ['NUMEXPR_NUM_THREADS'] = str(cpu_num)
+torch.set_num_threads(cpu_num)
 
-path = "//home//leidenschaftchen//MRI//BAA2312//image//sub-093-anat-sub-093_run-01_T1w.nii.gz"
-PREimg = sitk.ReadImage(path)
-PREdata = sitk.GetArrayFromImage(PREimg)
 
-rawImage = PREdata[50]
-MavVl = float(np.amax(rawImage))
-rawImage = rawImage / MavVl
+x = torch.zeros(7,256,224,2)
 
-image = torch.tensor(rawImage)
+for i in range(7):
+    path = "B1" + str(i+1) + ".png"
+    inp = imageio.imread(path)
+    MavVl = float(np.max(inp))
+    rawImage = inp / MavVl
 
-#image = torch.tensor(PREdata[115])
-x = torch.zeros(1,256,256,2)
-x[0,:,:,0] = image
-#for i in range(10):
-#    x[i,:,:,0] = torch.tensor(PREdata[35+i])
+    image = torch.tensor(rawImage)
+
+    #image = torch.tensor(PREdata[115])
+    x[i,:,:,0] = image
+    #for i in range(10):
+    #    x[i,:,:,0] = torch.tensor(PREdata[35+i])
 
 
 y = torch.fft(x, signal_ndim=2, normalized=True) + 0.03 * torch.randn_like(x)
@@ -79,11 +90,13 @@ result = learn(data, p_init, p_bounds, free_parametrisation, A, reg_func,
 
 stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation, params)
 
-imageio.imwrite("SDFJ1.png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
+imageio.imwrite("Sampling.png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
 
-imageio.imwrite("SDFJ12.png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
+for i in range(7):
+    imageio.imwrite("RawB"+ str(i+1) +".png",torch.sqrt(torch.sum(data['x'][i, :, :, :]**2, dim=2)))
+    imageio.imwrite("RecB"+ str(i+1) +".png",torch.sqrt(torch.sum(stats['recons'][i, :, :, :]**2, dim=2)))
 
 
-imageio.imwrite("SDFJ123.png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))
-
-
+print(result)
+print('\n')
+print(stats)
