@@ -30,7 +30,7 @@ torch.set_printoptions(threshold=np.inf)
 x = torch.zeros(7,256,224,2)
 
 for i in range(7):
-    path = "B1" + str(i+1) + ".png"
+    path = "J2" + str(i+1) + ".png"
     inp = imageio.imread(path)
     MavVl = float(np.max(inp))
     rawImage = inp / MavVl
@@ -98,15 +98,16 @@ for i in range(7):
     imageio.imwrite("RawB"+ str(i+1) +".png",torch.sqrt(torch.sum(data['x'][i, :, :, :]**2, dim=2)))
     imageio.imwrite("RecB"+ str(i+1) +".png",torch.sqrt(torch.sum(stats['recons'][i, :, :, :]**2, dim=2)))
 
-
 print(str(result))
 print('\n')
 print(str(stats))
 
 fou = open('res.txt','w')
-fou.write(stats)
+fou.write(str(result))
 fou.write('\n')
-fou.write(stats)
+fou.write(str(stats))
+
+
 
 
 import requests

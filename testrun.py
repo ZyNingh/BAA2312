@@ -30,7 +30,7 @@ torch.set_printoptions(threshold=np.inf)
 x = torch.zeros(7,256,224,2)
 
 for i in range(7):
-    path = "B1" + str(i+1) + ".png"
+    path = "J2" + str(i+1) + ".png"
     inp = imageio.imread(path)
     MavVl = float(np.max(inp))
     rawImage = inp / MavVl
@@ -54,15 +54,15 @@ params = {
     },
     'alg_params': {
         'll_sol': {
-            'maxit': 1000,
+            'maxit': 2,
             'tol': 1e-10
         },
         'lin_sys': {
-            'maxit': 1000,
+            'maxit': 2,
             'tol': 1e-6
         },
         'LBFGSB': {
-            'maxit': 1000,
+            'maxit': 2,
             'pgtol': 1e-8
         }
     }
@@ -104,9 +104,9 @@ print('\n')
 print(str(stats))
 
 fou = open('res.txt','w')
-fou.write(stats)
+fou.write(str(result))
 fou.write('\n')
-fou.write(stats)
+fou.write(str(stats))
 
 
 import requests
@@ -115,7 +115,7 @@ import requests
 TOKEN  = "6071613273:AAEDCA5RLBtshqbCSSalxPF1KCgeEBgsfLs"
 
 chat_id = "1189489886"
-message = "run in google cloud FINISHED"
+message = "run in google cloud2 FINISHED"
 
 url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={message}"
 
