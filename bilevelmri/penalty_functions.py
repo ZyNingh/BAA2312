@@ -1,11 +1,11 @@
 import torch
 
 
-def l1_penalty(S, beta=0.2):
+def l1_penalty(S, beta=0.8):
     return torch.sum(beta * S) / torch.numel(S)
 
 
-def l1_disc_penalty(S, beta=(.2, .2)):
+def l1_disc_penalty(S, beta=(.8, .8)):
     return torch.sum(beta[0] * S + beta[1] * S * (1 - S)) / torch.numel(S)
 
 
