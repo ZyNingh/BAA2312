@@ -27,23 +27,23 @@ torch.set_num_threads(cpu_num)
 torch.set_printoptions(threshold=np.inf)
 
 
-x = torch.zeros(7,256,224,2)
+x = torch.zeros(1,64,64,2)
 
-for i in range(7):
-    path = "J2" + str(i+1) + ".png"
-    inp = imageio.imread(path)
-    MavVl = float(np.max(inp))
-    rawImage = inp / MavVl
+path = ".png"
+inp = imageio.imread(path)
+MavVl = float(np.max(inp))
+rawImage = inp / MavVl
 
-    image = torch.tensor(rawImage)
+image = torch.tensor(rawImage)
 
     #image = torch.tensor(PREdata[115])
-    x[i,:,:,0] = image
+x[0,:,:,0] = image
     #for i in range(10):
     #    x[i,:,:,0] = torch.tensor(PREdata[35+i])
 
 
-y = torch.fft(x, signal_ndim=2, normalized=True) + 0.03 * torch.randn_like(x)
+#y = torch.fft(x, signal_ndim=2, normalized=True) + 0.03 * torch.randn_like(x)
+y = torch.fft(x, signal_ndim=2, normalized=True)
 data = {'x': x, 'y': y}
 n1, n2 = x.shape[1:3]
 
@@ -54,15 +54,15 @@ params = {
     },
     'alg_params': {
         'll_sol': {
-            'maxit': 2,
+            'maxit': 1000,
             'tol': 1e-10
         },
         'lin_sys': {
-            'maxit': 2,
+            'maxit': 1000,
             'tol': 1e-6
         },
         'LBFGSB': {
-            'maxit': 2,
+            'maxit': 1000,
             'pgtol': 1e-8
         }
     }
@@ -73,7 +73,7 @@ reg_func = Smoothed1Norm(gamma=1e-2)
 
 
 def penalty(p):
-    return l1_disc_penalty(p[:-2], beta=(.1, .1))
+    return l1_disc_penalty(p[:-2], beta=(.05, .05))
 
 # tune alpha on full sampling pattern to get initialisation
 tuned_alpha = learn(data, 1e-3, [(0, np.inf)], alpha_parametrisation, A,
@@ -94,10 +94,8 @@ stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation,
 
 imageio.imwrite("Sampling.png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
 
-for i in range(7):
-    imageio.imwrite("RawB"+ str(i+1) +".png",torch.sqrt(torch.sum(data['x'][i, :, :, :]**2, dim=2)))
-    imageio.imwrite("RecB"+ str(i+1) +".png",torch.sqrt(torch.sum(stats['recons'][i, :, :, :]**2, dim=2)))
-
+imageio.imwrite("Raw.png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
+imageio.imwrite("Rec.png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))
 
 print(str(result))
 print('\n')
@@ -109,13 +107,15 @@ fou.write('\n')
 fou.write(str(stats))
 
 
+
+
 import requests
 
 
 TOKEN  = "6071613273:AAEDCA5RLBtshqbCSSalxPF1KCgeEBgsfLs"
 
 chat_id = "1189489886"
-message = "run in google cloud2 FINISHED"
+message = "run in google cloud BA FINISHED"
 
 url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={message}"
 
