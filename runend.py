@@ -25,9 +25,11 @@ os.environ ['MKL_NUM_THREADS'] = str(cpu_num)
 os.environ ['VECLIB_MAXIMUM_THREADS'] = str(cpu_num)
 os.environ ['NUMEXPR_NUM_THREADS'] = str(cpu_num)
 torch.set_num_threads(cpu_num)
-torch.set_printoptions(threshold=np.inf)
+#torch.set_printoptions(threshold=np.inf)
 
-for BETACO in [0.001,0.01,0.05,0.1,0.3,0.5]:
+ITN = 0
+
+for BETACO in [0.00001,0.0001,0.001,0.01,0.1,1]:
     for i in range(6):
         x = torch.zeros(1,64,64,2)
 
@@ -64,8 +66,8 @@ for BETACO in [0.001,0.01,0.05,0.1,0.3,0.5]:
                     'tol': 1e-6
                 },
                 'LBFGSB': {
-                    'maxit': 1000,
-                    'pgtol': 1e-8
+                    'maxit': 2000,
+                    'pgtol': 1e-4
                 }
             }
         }
@@ -94,7 +96,7 @@ for BETACO in [0.001,0.01,0.05,0.1,0.3,0.5]:
 
         stats = compute_statistics(data, result['p'], A, reg_func, free_parametrisation, params)
 
-        imageio.imwrite("Sampling.png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
+        imageio.imwrite("Samplings"+str(i)".png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
 
         imageio.imwrite("Raw" + str(path) + "beta" + str(BETACO) + ".png",torch.sqrt(torch.sum(data['x'][0, :, :, :]**2, dim=2)))
         imageio.imwrite("Rec" + str(path) + "beta" + str(BETACO) +".png",torch.sqrt(torch.sum(stats['recons'][0, :, :, :]**2, dim=2)))
@@ -104,15 +106,20 @@ for BETACO in [0.001,0.01,0.05,0.1,0.3,0.5]:
         print(str(stats))
 
         fou = open('res.txt','w')
+        fou.write("###ITERATION" + str(ITN) + " beta" + str(BETACO) + "of image" + path)
         fou.write(str(result))
         fou.write('\n')
         fou.write(str(stats))
+        fou.write('\n')
+        fou.write("Samplingrate:" + str(np.mean(result['p']>0)*100))
+        fou.write('\n')
+        ITN += 1
 
 
         TOKEN  = "6071613273:AAEDCA5RLBtshqbCSSalxPF1KCgeEBgsfLs"
 
         chat_id = "1189489886"
-        message = "run in google cloud BA FINISHED " + path + "with beta" + str(BETACO)
+        message = "run in google cloud BA FINISHED " + path + "with beta" + str(BETACO) + "of image" + path
 
         url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={message}"
 
