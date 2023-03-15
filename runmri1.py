@@ -105,7 +105,7 @@ for BETACO in [0.001,0.01]:
     print(str(stats))
 
     fou = open('res.txt','a')
-    fou.write("###ITERATION" + " beta" + BETACO )
+    fou.write("###ITERATION" + " beta" + str(BETACO) )
     fou.write(str(result))
     fou.write('\n')
     fou.write(str(stats))
