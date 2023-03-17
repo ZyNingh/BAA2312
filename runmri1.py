@@ -25,25 +25,19 @@ os.environ ['VECLIB_MAXIMUM_THREADS'] = str(cpu_num)
 os.environ ['NUMEXPR_NUM_THREADS'] = str(cpu_num)
 torch.set_num_threads(cpu_num)
 torch.set_printoptions(threshold=np.inf)
+import requests
 
 ITERATION = 1
-for BETACO in [0.001,0.01]:
-
+for BETACO in [0.001,0.005,0.01,0.1]:
+#for BETACO in [0.001,0.005,0.01,0.1]:
     x = torch.zeros(7,256,224,2)
-
     for i in range(7):
         path = "B1" + str(i+1) + ".png"
         inp = imageio.imread(path)
         MavVl = float(np.max(inp))
         rawImage = inp / MavVl
-
         image = torch.tensor(rawImage)
-
-        #image = torch.tensor(PREdata[115])
         x[i,:,:,0] = image
-        #for i in range(10):
-        #    x[i,:,:,0] = torch.tensor(PREdata[35+i])
-
 
     y = torch.fft(x, signal_ndim=2, normalized=True) + 0.03 * torch.randn_like(x)
     data = {'x': x, 'y': y}
@@ -64,8 +58,8 @@ for BETACO in [0.001,0.01]:
                 'tol': 1e-6
             },
             'LBFGSB': {
-                'maxit': 1000,
-                'pgtol': 1e-8
+                'maxit': 2500,
+                'pgtol': 4e-8
             }
         }
     }
@@ -97,8 +91,8 @@ for BETACO in [0.001,0.01]:
     imageio.imwrite("Sampling" + "beta" + str(BETACO) + ".png",fftpack.fftshift(result['p'][:-2].reshape(n1, n2)))
 
     for i in range(7):
-        imageio.imwrite("RawB"+ str(i+1) + "beta" + str(BETACO) +".png",torch.sqrt(torch.sum(data['x'][i, :, :, :]**2, dim=2)))
-        imageio.imwrite("RecB"+ str(i+1) + "beta" + str(BETACO) +".png",torch.sqrt(torch.sum(stats['recons'][i, :, :, :]**2, dim=2)))
+        imageio.imwrite(".//beta"+str( BETACO)+"//"+"RawB"+ str(i+1) + "beta" + str(BETACO) +".png",torch.sqrt(torch.sum(data['x'][i, :, :, :]**2, dim=2)))
+        imageio.imwrite(".//beta"+str( BETACO)+"//"+"RecB"+ str(i+1) + "beta" + str(BETACO) +".png",torch.sqrt(torch.sum(stats['recons'][i, :, :, :]**2, dim=2)))
 
     print(str(result))
     print('\n')
@@ -110,11 +104,17 @@ for BETACO in [0.001,0.01]:
     fou.write('\n')
     fou.write(str(stats))
 
+    op = open(".//beta"+str( BETACO)+'//res.txt','a')
+    op.write(str(BETACO) + '\n' + str(100 * np.mean(result['p']>0)))
+    op.write('\n' + str(result))
+    op.write('\n'+ str(stats))
+    op.close()
+
 
     TOKEN  = "6071613273:AAEDCA5RLBtshqbCSSalxPF1KCgeEBgsfLs"
-
+    rate = 100 * np.mean(result['p']>0)
     chat_id = "1189489886"
-    message = "run in google cloud FINISHED mri beta" + str(BETACO)
+    message = "MRI with beta " + str(BETACO) + "\n" + "result" + str(result['task']) + "\nrate" + str(rate) + '\nstatr' + '\nssims: ' + str(stats['ssims']) + '\npsnrs: ' + str(stats['psnrs'])
 
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={message}"
 
