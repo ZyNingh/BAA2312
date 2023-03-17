@@ -29,7 +29,7 @@ import requests
 
 ITERATION = 1
 for BETACO in [0.001,0.005,0.01,0.1]:
-#for BETACO in [0.001,0.005,0.01,0.1]:
+#for BETACO in [0.00001,0.00005,0.0001,0.0005]:
     x = torch.zeros(7,256,224,2)
     for i in range(7):
         path = "B1" + str(i+1) + ".png"
@@ -114,7 +114,7 @@ for BETACO in [0.001,0.005,0.01,0.1]:
     TOKEN  = "6071613273:AAEDCA5RLBtshqbCSSalxPF1KCgeEBgsfLs"
     rate = 100 * np.mean(result['p']>0)
     chat_id = "1189489886"
-    message = "MRI with beta " + str(BETACO) + "\n" + "result" + str(result['task']) + "\nrate" + str(rate) + '\nstatr' + '\nssims: ' + str(stats['ssims']) + '\npsnrs: ' + str(stats['psnrs'])
+    message = "MRI with beta " + str(BETACO) + "\n" + "result" + str(result['ingo']['task']) + "\nrate" + str(rate) + '\nstatr' + '\nssims: ' + str(stats['ssims']) + '\npsnrs: ' + str(stats['psnrs'])
 
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage?chat_id={chat_id}&text={message}"
 
